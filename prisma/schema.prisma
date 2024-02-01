@@ -24,7 +24,8 @@ model Book {
 model Borrower {
   id             String     @id @default(uuid())
   name           String
-  email          String
+  email          String     @unique
+  password       String
   registeredDate DateTime
 
   borrowings     Borrowing[]
