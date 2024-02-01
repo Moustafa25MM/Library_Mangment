@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import morgan from 'morgan';
 import prisma from './database';
 import { indexRouter } from './routes';
+import { createDefaultAdmin } from './defaultAdmin';
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(morgan('tiny'));
 
 prisma.$connect().then(() => {
   console.log('Successfully Connected to Database.');
+  createDefaultAdmin();
 });
 
 app.use(indexRouter);

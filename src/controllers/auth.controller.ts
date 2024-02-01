@@ -10,61 +10,63 @@ export const registerBorrower = async (
 ) => {
   try {
     const { name, email, password } = request.body;
-    const existingBorrower = await prisma.borrower.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingBorrower) {
-      return response.status(409).send('borrower already exists');
+    if (existingUser) {
+      return response.status(409).send('user already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const borrower = await prisma.borrower.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
         registeredDate: new Date(),
+        role: 'BORROWER',
       },
     });
     return requestHandler.sendSuccess(
       response,
-      'borrower created successfully'
-    )({ borrower });
+      'user created successfully'
+    )({ user });
   } catch (error: any) {
     return requestHandler.sendError(response, error);
   }
 };
 
-export const loginBorrower = async (request: Request, response: Response) => {
+export const loginUser = async (request: Request, response: Response) => {
   try {
     const { email, password } = request.body;
-    const existingBorrower = await prisma.borrower.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-    if (!existingBorrower) {
-      return response.status(401).json({ error: 'borrower does not exist' });
+    if (!existingUser) {
+      return response.status(401).json({ error: 'user does not exist' });
     }
 
     const comparePassword = await bcrypt.compare(
       password,
-      existingBorrower.password
+      existingUser.password
     );
 
     if (!comparePassword) {
-      response.status(401).json({ error: 'Invalid email or password' });
+      return response.status(401).json({ error: 'Invalid email or password' });
     }
-    const token = authMethods.generateJWT({ id: existingBorrower.id });
+    const token = authMethods.generateJWT({ id: existingUser.id });
 
-    const borrowerData = {
-      id: existingBorrower.id,
-      name: existingBorrower.name,
-      email: existingBorrower.email,
+    const userData = {
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email,
+      role: existingUser.role,
     };
     return requestHandler.sendSuccess(
       response,
-      'borrower Login Successfully'
-    )({ token, borrower: borrowerData });
+      'user Login Successfully'
+    )({ token, user: userData });
   } catch (error: any) {
     return requestHandler.sendError(response, error);
   }
