@@ -175,3 +175,41 @@ export const listAllOverdueBooks = async (request: any, response: Response) => {
     return requestHandler.sendError(response, error);
   }
 };
+
+export const checkBorrowerOverdueBooks = async (
+  request: any,
+  response: Response
+) => {
+  const userId = request.user.id;
+
+  try {
+    const currentDate = new Date();
+
+    const overdueBooks = await prisma.borrowing.findMany({
+      where: {
+        userId,
+        dueDate: {
+          lt: currentDate,
+        },
+        returned: false,
+      },
+      include: {
+        book: true, // include information about the book
+      },
+    });
+
+    if (overdueBooks.length === 0) {
+      return requestHandler.sendSuccess(
+        response,
+        'You have no overdue books'
+      )({ overdueBooks });
+    }
+
+    return requestHandler.sendSuccess(
+      response,
+      'Your overdue books retrieved successfully'
+    )({ overdueBooks });
+  } catch (error: any) {
+    return requestHandler.sendError(response, error);
+  }
+};

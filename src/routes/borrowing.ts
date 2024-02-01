@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authMethods } from '../middlewares/auth';
 import { isAdmin, isUser } from '../middlewares/role';
 import {
+  checkBorrowerOverdueBooks,
   checkOutBook,
   getCurrentlyBorrowedBooks,
   listAllOverdueBooks,
@@ -19,7 +20,14 @@ router.get(
   getCurrentlyBorrowedBooks
 );
 router.get(
-  '/list/overdue/books',
+  '/list/user/overdue/books',
+  authMethods.isAuthenicated,
+  isUser,
+  checkBorrowerOverdueBooks
+);
+
+router.get(
+  '/list/all/overdue/books',
   authMethods.isAuthenicated,
   isAdmin,
   listAllOverdueBooks
