@@ -2,20 +2,24 @@ import prisma from '../database';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { authMethods } from '../middlewares/auth';
+import requestHandler from '../handlers/requestHandler';
 
-export const registerUser = async (request: Request, response: Response) => {
+export const registerBorrower = async (
+  request: Request,
+  response: Response
+) => {
   try {
     const { name, email, password } = request.body;
-    const existingUser = await prisma.borrower.findUnique({
+    const existingBorrower = await prisma.borrower.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
-      return response.status(409).send('user already exists');
+    if (existingBorrower) {
+      return response.status(409).send('borrower already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await prisma.borrower.create({
+    const borrower = await prisma.borrower.create({
       data: {
         name,
         email,
@@ -23,41 +27,45 @@ export const registerUser = async (request: Request, response: Response) => {
         registeredDate: new Date(),
       },
     });
-    return response.status(201).json({ msg: 'user created successfully' });
-  } catch (error) {
-    console.log('error occured in create user', error);
-    throw error;
+    return requestHandler.sendSuccess(
+      response,
+      'borrower created successfully'
+    )({ borrower });
+  } catch (error: any) {
+    return requestHandler.sendError(response, error);
   }
 };
 
-export const loginUser = async (request: Request, response: Response) => {
+export const loginBorrower = async (request: Request, response: Response) => {
   try {
     const { email, password } = request.body;
-    const existingUser = await prisma.borrower.findUnique({
+    const existingBorrower = await prisma.borrower.findUnique({
       where: { email },
     });
-    if (!existingUser) {
-      return response.status(401).json({ error: 'user does not exist' });
+    if (!existingBorrower) {
+      return response.status(401).json({ error: 'borrower does not exist' });
     }
 
     const comparePassword = await bcrypt.compare(
       password,
-      existingUser.password
+      existingBorrower.password
     );
 
     if (!comparePassword) {
       response.status(401).json({ error: 'Invalid email or password' });
     }
-    const token = authMethods.generateJWT({ id: existingUser.id });
+    const token = authMethods.generateJWT({ id: existingBorrower.id });
 
-    const userData = {
-      id: existingUser.id,
-      name: existingUser.name,
-      email: existingUser.email,
+    const borrowerData = {
+      id: existingBorrower.id,
+      name: existingBorrower.name,
+      email: existingBorrower.email,
     };
-    response.status(200).json({ token, user: userData });
-  } catch (error) {
-    console.log('error occurred in Login user', error);
-    throw error;
+    return requestHandler.sendSuccess(
+      response,
+      'borrower Login Successfully'
+    )({ token, borrower: borrowerData });
+  } catch (error: any) {
+    return requestHandler.sendError(response, error);
   }
 };
