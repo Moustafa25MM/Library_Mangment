@@ -43,6 +43,7 @@ model Borrowing {
   id             String      @id @default(uuid())
   borrowedDate   DateTime
   dueDate        DateTime
+  returned       Boolean     @default(false)
   book           Book        @relation(fields: [bookId], references: [id])
   bookId         String
   user           User        @relation(fields: [userId], references: [id])
