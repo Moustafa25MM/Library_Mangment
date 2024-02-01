@@ -11,7 +11,7 @@ const isAdmin = (request: any, response: Response, next: NextFunction) => {
 };
 
 const isUser = (request: any, response: Response, next: NextFunction) => {
-  if (request.user && request.user.role === 'USER') {
+  if (request.user && request.user.role === 'BORROWER') {
     next();
   } else {
     return response
