@@ -10,6 +10,9 @@
   "author": "Moustafa Mahmoud",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.14",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.1",
@@ -20,6 +23,11 @@
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "@types/cookie-parser": "^1.4.6",
+    "@types/express": "^4.17.21",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "nodemon": "^3.0.3",
+    "typescript": "^5.3.3"
   }
 }
