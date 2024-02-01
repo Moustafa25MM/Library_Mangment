@@ -1,12 +1,17 @@
 import express, { Express, Response, Request } from 'express';
 import * as dotenv from 'dotenv';
 import morgan from 'morgan';
+import prisma from './database';
 
 dotenv.config();
 
 const app: Express = express();
 app.use(express.json());
 app.use(morgan('tiny'));
+
+prisma.$connect().then(() => {
+  console.log('Successfully Connected to Database.');
+});
 
 app.use('/', (req: Request, res: Response) => {
   console.log('Index');
