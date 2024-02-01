@@ -6,3 +6,42 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+
+model Book {
+  id             String     @id @default(uuid())
+  title          String
+  author         String
+  isbn           String
+  quantity       Int
+  shelfLocation  String
+
+  borrowings     Borrowing[]
+  
+  @@map(name: "books") 
+}
+
+model Borrower {
+  id             String     @id @default(uuid())
+  name           String
+  email          String
+  registeredDate DateTime
+
+  borrowings     Borrowing[]
+  
+  @@map(name: "borrowers") 
+}
+
+model Borrowing {
+  id             String     @id @default(uuid())
+  borrowedDate   DateTime
+  dueDate        DateTime
+
+  book           Book       @relation(fields: [bookId], references: [id])
+  bookId         String
+
+  borrower       Borrower   @relation(fields: [borrowerId], references: [id])
+  borrowerId     String
+  
+  @@map(name: "borrowings") 
+}
