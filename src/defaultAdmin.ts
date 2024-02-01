@@ -33,7 +33,9 @@ export const createDefaultAdmin = async () => {
         },
       });
 
-      console.log('Default admin account created');
+      console.log(
+        `Default admin account created with email :${defaultEmail} and password : ${defaultPassword} `
+      );
     } else {
       console.log('Default admin account already exists');
     }
