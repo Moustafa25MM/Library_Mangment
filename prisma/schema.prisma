@@ -28,12 +28,15 @@ model User {
 
 model Book {
   id             String      @id @default(uuid())
-  title          String
-  author         String
+  title          String      
+  author         String       
   isbn           String      @unique
   quantity       Int
   shelfLocation  String
   borrowings     Borrowing[]
+
+  @@index([title])
+  @@index([author])
 
   @@map(name: "books")
 }

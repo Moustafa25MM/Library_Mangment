@@ -124,6 +124,11 @@ export const searchBooks = async (request: any, response: Response) => {
   // Extract title, author, and isbn from the query parameters
   const { title, author, isbn } = request.query;
 
+  // If no search parameters are provided, return all books
+  if (!title && !author && !isbn) {
+    return listBooks(request, response);
+  }
+
   // Initialize an object to hold the search conditions
   const searchConditions: any = {};
 
@@ -158,18 +163,12 @@ export const searchBooks = async (request: any, response: Response) => {
         AND: [searchConditions],
       },
     });
-    // If books are found, send them back in the response
-    if (books.length > 0) {
-      return requestHandler.sendSuccess(
-        response,
-        'Books found successfully'
-      )({ books });
-    } else {
-      return requestHandler.sendSuccess(
-        response,
-        'No books found with the given criteria.'
-      )({});
-    }
+    return requestHandler.sendSuccess(
+      response,
+      books.length > 0
+        ? 'Books found successfully'
+        : 'No books found with the given criteria.'
+    )({ books });
   } catch (error: any) {
     // Handle any errors that occur during the database query
     return requestHandler.sendError(response, error);
