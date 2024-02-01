@@ -4,6 +4,7 @@ import { isAdmin, isUser } from '../middlewares/role';
 import {
   checkOutBook,
   getCurrentlyBorrowedBooks,
+  listAllOverdueBooks,
   returnBook,
 } from '../controllers/borrowing.controller';
 
@@ -16,6 +17,12 @@ router.get(
   authMethods.isAuthenicated,
   isUser,
   getCurrentlyBorrowedBooks
+);
+router.get(
+  '/list/overdue/books',
+  authMethods.isAuthenicated,
+  isAdmin,
+  listAllOverdueBooks
 );
 
 export const BorrowingRoutes: Router = router;
