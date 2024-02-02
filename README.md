@@ -5,6 +5,10 @@
 ```bash
 Clone the github repository
 
+Make sure the following Ports are not busy
+4000
+5432
+
 if you have Docker in your machine :
 run the following commands :
 docker-compose build
@@ -32,6 +36,12 @@ DEFAULT_ADMIN_PASSWORD=YourSecureAdminPassword
 ```
 
 ## How to use
+
+### Database Diagram :
+
+![Alt text](./database_diagram.png)
+
+### API DOCUMENTATION :
 
 ### Reister User
 
