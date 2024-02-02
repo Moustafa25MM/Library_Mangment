@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import RequestHandler from '../handlers/requestHandler';
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
+import { paginationOption } from '../utils/paginations';
 
 export const createAdmin = async (request: Request, response: Response) => {
   const errors = validationResult(request);
@@ -116,16 +117,33 @@ export const deleteBorrower = async (request: Request, response: Response) => {
   }
 };
 
-export const listBorrowers = async (_: Request, response: Response) => {
+export const listBorrowers = async (request: Request, response: Response) => {
   try {
-    const borrowers = await prisma.user.findMany({
+    const pageSize = parseInt(request.query.pageSize as string) || 10; // default page size is 10
+    const pageNumber = parseInt(request.query.pageNumber as string) || 1; // default to the first page
+
+    // Find the total number of documents
+    const totalDocs = await prisma.user.count({
       where: { role: 'BORROWER' },
     });
+
+    const pagination = paginationOption(pageSize, pageNumber, totalDocs);
+
+    const borrowers = await prisma.user.findMany({
+      where: { role: 'BORROWER' },
+      take: pagination.limit, // the number of borrowers to fetch
+      skip: (pageNumber - 1) * pageSize, // how many borrowers to skip
+    });
+
+    const paginatedResponse = {
+      pagination,
+      borrowers,
+    };
 
     return RequestHandler.sendSuccess(
       response,
       'Borrowers retrieved successfully'
-    )({ borrowers });
+    )({ paginatedResponse });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
