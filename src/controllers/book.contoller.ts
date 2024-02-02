@@ -35,7 +35,8 @@ export const addBook = async (request: Request, response: Response) => {
 
     return RequestHandler.sendSuccess(
       response,
-      'Book added successfully'
+      'Book added successfully',
+      201
     )({ book });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);

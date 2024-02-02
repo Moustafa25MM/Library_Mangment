@@ -39,7 +39,8 @@ export const createAdmin = async (request: Request, response: Response) => {
 
     return RequestHandler.sendSuccess(
       response,
-      'Admin created successfully'
+      'Admin created successfully',
+      201
     )({ admin });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
