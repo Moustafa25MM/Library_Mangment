@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  node-app:
+    build: .
+    ports:
+      - '4000:4000'
+    environment:
+      - PORT=4000
+      - DATABASE_URL=postgresql://postgres:ghandor@postgres:5432/library
+      - JWT_SECRET=Bosta
+      - DEFAULT_ADMIN_EMAIL=admin@example.com
+      - DEFAULT_ADMIN_PASSWORD=YourSecureAdminPassword
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ghandor
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
