@@ -112,3 +112,72 @@ export const getLastMonthBorrowings = async (
     return RequestHandler.sendError(response, error);
   }
 };
+
+export const getBorrowingsInPeriod = async (
+  request: Request,
+  response: Response
+) => {
+  const { startDate, endDate } = request.query;
+
+  if (!startDate || !endDate) {
+    return response
+      .status(404)
+      .json({ error: 'Start date and end date are required.' });
+  }
+
+  const parsedStartDate = new Date(startDate as string);
+  const parsedEndDate = new Date(endDate as string);
+
+  try {
+    const periodBorrowings = await prisma.borrowing.findMany({
+      where: {
+        borrowedDate: {
+          gte: parsedStartDate,
+          lte: parsedEndDate,
+        },
+      },
+      include: {
+        book: true,
+        user: true,
+      },
+    });
+
+    const borrowingReports: BorrowingReport[] = periodBorrowings.map(
+      (borrowing: any) => ({
+        borrowingId: borrowing.id,
+        bookTitle: borrowing.book.title,
+        borrowedDate: formatISO(borrowing.borrowedDate, {
+          representation: 'date',
+        }),
+        dueDate: formatISO(borrowing.dueDate, { representation: 'date' }),
+        borrowerName: borrowing.user.name,
+        borrowerEmail: borrowing.user.email,
+        returned: borrowing.returned,
+      })
+    );
+
+    const headers = [
+      { id: 'borrowingId', title: 'Borrowing ID' },
+      { id: 'bookTitle', title: 'Book Title' },
+      { id: 'borrowedDate', title: 'Borrowed Date' },
+      { id: 'dueDate', title: 'Due Date' },
+      { id: 'borrowerName', title: 'Borrower Name' },
+      { id: 'borrowerEmail', title: 'Borrower Email' },
+      { id: 'returned', title: 'Returned' },
+    ];
+
+    const reportFileName = `borrowingsReport_${startDate}_${endDate}.csv`;
+    await writeDataToCsvFile(
+      `../assets/reports/${reportFileName}`,
+      headers,
+      borrowingReports
+    );
+
+    return RequestHandler.sendSuccess(
+      response,
+      'Borrowings report for the specified period generated successfully.'
+    )({ borrowingReports });
+  } catch (error: any) {
+    return RequestHandler.sendError(response, error);
+  }
+};
