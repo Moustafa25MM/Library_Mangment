@@ -8,13 +8,26 @@ import {
   searchBooks,
   updateBook,
 } from '../controllers/book.contoller';
+import { bookValidationRules } from '../middlewares/inputValidation';
 
 const router = Router();
 
-router.post('/add', authMethods.isAuthenicated, isAdmin, addBook);
+router.post(
+  '/add',
+  bookValidationRules,
+  authMethods.isAuthenicated,
+  isAdmin,
+  addBook
+);
 router.get('/list/books', authMethods.isAuthenicated, listBooks);
 router.get('/search/books', authMethods.isAuthenicated, searchBooks);
-router.put('/update/:bookId', authMethods.isAuthenicated, isAdmin, updateBook);
+router.put(
+  '/update/:bookId',
+  bookValidationRules,
+  authMethods.isAuthenicated,
+  isAdmin,
+  updateBook
+);
 router.delete(
   '/delete/:bookId',
   authMethods.isAuthenicated,

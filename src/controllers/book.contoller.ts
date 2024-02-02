@@ -1,8 +1,14 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
 import requestHandler from '../handlers/requestHandler';
+import { validationResult } from 'express-validator';
 
 export const addBook = async (request: Request, response: Response) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) {
+    // If there are errors, send a 400 response with the errors
+    return response.status(400).json({ errors: errors.array()[0].msg });
+  }
   const { title, author, isbn, quantity, shelfLocation } = request.body;
 
   // Check for existing book with the same ISBN
@@ -37,6 +43,11 @@ export const addBook = async (request: Request, response: Response) => {
 };
 
 export const updateBook = async (request: Request, response: Response) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) {
+    // If there are errors, send a 400 response with the errors
+    return response.status(400).json({ errors: errors.array()[0].msg });
+  }
   const { bookId } = request.params;
   const { title, author, isbn, quantity, shelfLocation } = request.body;
 
