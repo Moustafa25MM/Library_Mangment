@@ -1,7 +1,7 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
 import RequestHandler from '../handlers/requestHandler';
-import { addDays, subMonths, formatISO } from 'date-fns';
+import { addDays, subMonths, formatISO, isValid, isAfter } from 'date-fns';
 import { writeDataToCsvFile } from '../utils/csvWriter';
 import { BorrowingReport, OverdueBookReport } from '../types/reports';
 
@@ -132,6 +132,17 @@ export const getBorrowingsInPeriod = async (
   const parsedStartDate = new Date(startDate as string);
   const parsedEndDate = new Date(endDate as string);
 
+  if (!isValid(parsedStartDate) || !isValid(parsedEndDate)) {
+    return response.status(400).json({
+      error:
+        'Invalid date format. Please use ISO 8601 date format , something like : 2024-01-01 .',
+    });
+  }
+  if (isAfter(parsedStartDate, parsedEndDate)) {
+    return response
+      .status(400)
+      .json({ error: 'Start date must be before end date.' });
+  }
   try {
     const periodBorrowings = await prisma.borrowing.findMany({
       where: {
