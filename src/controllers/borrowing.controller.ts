@@ -1,6 +1,7 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
 import RequestHandler from '../handlers/requestHandler';
+import { paginationOption } from '../utils/paginations';
 
 export const checkOutBook = async (request: any, response: Response) => {
   const userId = request.user.id;
@@ -114,30 +115,43 @@ export const getCurrentlyBorrowedBooks = async (
   response: Response
 ) => {
   const userId = request.user.id;
-
+  const pageSize = parseInt(request.query.pageSize as string) || 10;
+  const pageNumber = parseInt(request.query.pageNumber as string) || 1;
   try {
-    // Find all borrowing records for the user that have not been returned
+    const totalDocs = await prisma.borrowing.count({
+      where: {
+        userId,
+        returned: false,
+      },
+    });
+
+    const pagination = paginationOption(pageSize, pageNumber, totalDocs);
+
     const borrowedBooks = await prisma.borrowing.findMany({
       where: {
         userId,
         returned: false,
       },
       include: {
-        book: true, // include information about the book
+        book: true,
       },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
-    if (borrowedBooks.length === 0) {
-      return RequestHandler.sendSuccess(
-        response,
-        'No books currently borrowed'
-      )({ borrowedBooks });
-    }
+    const paginatedResponse = {
+      pagination,
+      borrowedBooks,
+    };
 
     return RequestHandler.sendSuccess(
       response,
-      'Currently borrowed books retrieved successfully'
-    )({ borrowedBooks });
+      borrowedBooks.length === 0
+        ? 'No books currently borrowed'
+        : 'Currently borrowed books retrieved successfully'
+    )({
+      paginatedResponse,
+    });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
@@ -146,6 +160,19 @@ export const getCurrentlyBorrowedBooks = async (
 export const listAllOverdueBooks = async (request: any, response: Response) => {
   try {
     const currentDate = new Date();
+    const pageSize = parseInt(request.query.pageSize as string) || 10;
+    const pageNumber = parseInt(request.query.pageNumber as string) || 1;
+
+    const totalDocs = await prisma.borrowing.count({
+      where: {
+        dueDate: {
+          lt: currentDate,
+        },
+        returned: false,
+      },
+    });
+
+    const pagination = paginationOption(pageSize, pageNumber, totalDocs);
 
     const overdueBooks = await prisma.borrowing.findMany({
       where: {
@@ -155,22 +182,26 @@ export const listAllOverdueBooks = async (request: any, response: Response) => {
         returned: false,
       },
       include: {
-        book: true, // include information about the book
-        user: true, // include information about the user
+        book: true,
+        user: true,
       },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
-    if (overdueBooks.length === 0) {
-      return RequestHandler.sendSuccess(
-        response,
-        'No overdue books found'
-      )({ overdueBooks });
-    }
+    const paginatedResponse = {
+      pagination,
+      overdueBooks,
+    };
 
     return RequestHandler.sendSuccess(
       response,
-      'Overdue books retrieved successfully'
-    )({ overdueBooks });
+      overdueBooks.length === 0
+        ? 'No overdue books found'
+        : 'Overdue books retrieved successfully'
+    )({
+      paginatedResponse,
+    });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
@@ -181,9 +212,22 @@ export const checkBorrowerOverdueBooks = async (
   response: Response
 ) => {
   const userId = request.user.id;
-
+  const pageSize = parseInt(request.query.pageSize as string) || 10;
+  const pageNumber = parseInt(request.query.pageNumber as string) || 1;
   try {
     const currentDate = new Date();
+
+    const totalDocs = await prisma.borrowing.count({
+      where: {
+        userId,
+        dueDate: {
+          lt: currentDate,
+        },
+        returned: false,
+      },
+    });
+
+    const pagination = paginationOption(pageSize, pageNumber, totalDocs);
 
     const overdueBooks = await prisma.borrowing.findMany({
       where: {
@@ -194,21 +238,25 @@ export const checkBorrowerOverdueBooks = async (
         returned: false,
       },
       include: {
-        book: true, // include information about the book
+        book: true,
       },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
-    if (overdueBooks.length === 0) {
-      return RequestHandler.sendSuccess(
-        response,
-        'You have no overdue books'
-      )({ overdueBooks });
-    }
+    const paginatedResponse = {
+      pagination,
+      overdueBooks,
+    };
 
     return RequestHandler.sendSuccess(
       response,
-      'Your overdue books retrieved successfully'
-    )({ overdueBooks });
+      overdueBooks.length === 0
+        ? 'You have no overdue books'
+        : 'Your overdue books retrieved successfully'
+    )({
+      paginatedResponse,
+    });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
