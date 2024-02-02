@@ -6,11 +6,15 @@ import { writeDataToCsvFile } from '../utils/csvWriter';
 import { BorrowingReport, OverdueBookReport } from '../types/reports';
 
 export const getOverdueBooks = async (request: Request, response: Response) => {
+  const today = new Date();
+  const oneMonthAgo = subMonths(today, 1);
+
   try {
     const overdueBooks = await prisma.borrowing.findMany({
       where: {
         dueDate: {
-          lt: new Date(),
+          lt: today,
+          gte: oneMonthAgo,
         },
         returned: false,
       },
