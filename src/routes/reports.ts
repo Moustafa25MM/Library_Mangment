@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { authMethods } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/role';
-import { getOverdueBooks } from '../controllers/report.controller';
+import {
+  getLastMonthBorrowings,
+  getOverdueBooks,
+} from '../controllers/report.controller';
 
 const router = Router();
 
@@ -10,6 +13,13 @@ router.get(
   authMethods.isAuthenicated,
   isAdmin,
   getOverdueBooks
+);
+
+router.get(
+  '/lastmonth/borrowings/books',
+  authMethods.isAuthenicated,
+  isAdmin,
+  getLastMonthBorrowings
 );
 
 export const ReportRoutes: Router = router;

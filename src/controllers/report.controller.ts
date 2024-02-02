@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import RequestHandler from '../handlers/requestHandler';
 import { addDays, subMonths, formatISO } from 'date-fns';
 import { writeDataToCsvFile } from '../utils/csvWriter';
-import { OverdueBookReport } from '../types/reports';
+import { BorrowingReport, OverdueBookReport } from '../types/reports';
 
 export const getOverdueBooks = async (request: Request, response: Response) => {
   try {
@@ -55,6 +55,59 @@ export const getOverdueBooks = async (request: Request, response: Response) => {
       response,
       'Overdue books report generated successfully.'
     )({ overdueBookReports });
+  } catch (error: any) {
+    return RequestHandler.sendError(response, error);
+  }
+};
+
+export const getLastMonthBorrowings = async (
+  request: Request,
+  response: Response
+) => {
+  const lastMonthDate = subMonths(new Date(), 1);
+
+  try {
+    const lastMonthBorrowings = await prisma.borrowing.findMany({
+      where: {
+        borrowedDate: {
+          gte: lastMonthDate,
+        },
+      },
+      include: {
+        book: true,
+      },
+    });
+
+    const borrowingReports: BorrowingReport[] = lastMonthBorrowings.map(
+      (borrowing: any) => ({
+        borrowingId: borrowing.id,
+        bookTitle: borrowing.book.title,
+        borrowedDate: formatISO(borrowing.borrowedDate, {
+          representation: 'date',
+        }),
+        dueDate: formatISO(borrowing.dueDate, { representation: 'date' }),
+        returned: borrowing.returned,
+      })
+    );
+
+    const headers = [
+      { id: 'borrowingId', title: 'Borrowing ID' },
+      { id: 'bookTitle', title: 'Book Title' },
+      { id: 'borrowedDate', title: 'Borrowed Date' },
+      { id: 'dueDate', title: 'Due Date' },
+      { id: 'returned', title: 'Returned' },
+    ];
+
+    await writeDataToCsvFile(
+      '../assets/reports/lastMonthBorrowingsReport.csv',
+      headers,
+      borrowingReports
+    );
+
+    return RequestHandler.sendSuccess(
+      response,
+      'Last month borrowings report generated successfully.'
+    )({ borrowingReports });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
