@@ -3,11 +3,17 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { authMethods } from '../middlewares/auth';
 import requestHandler from '../handlers/requestHandler';
+import { validationResult } from 'express-validator';
 
 export const registerBorrower = async (
   request: Request,
   response: Response
 ) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) {
+    // If there are errors, send a 400 response with the errors
+    return response.status(400).json({ errors: errors.array()[0].msg });
+  }
   try {
     const { name, email, password } = request.body;
     const existingUser = await prisma.user.findUnique({

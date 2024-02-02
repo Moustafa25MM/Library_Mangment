@@ -2,8 +2,15 @@ import prisma from '../database';
 import { Request, Response } from 'express';
 import requestHandler from '../handlers/requestHandler';
 import bcrypt from 'bcrypt';
+import { validationResult } from 'express-validator';
 
 export const createAdmin = async (request: Request, response: Response) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) {
+    // If there are errors, send a 400 response with the errors
+    return response.status(400).json({ errors: errors.array()[0].msg });
+  }
+
   const { name, email, password } = request.body;
   if (!email || !password || !name) {
     return response

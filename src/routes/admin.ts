@@ -7,10 +7,17 @@ import {
 } from '../controllers/admin.controller';
 import { authMethods } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/role';
+import { userValidationRules } from '../middlewares/inputValidation';
 
 const router = Router();
 
-router.post('/create/admin', authMethods.isAuthenicated, isAdmin, createAdmin);
+router.post(
+  '/create/admin',
+  userValidationRules,
+  authMethods.isAuthenicated,
+  isAdmin,
+  createAdmin
+);
 router.get(
   '/get/borrowers',
   authMethods.isAuthenicated,
