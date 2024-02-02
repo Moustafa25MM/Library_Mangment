@@ -24,13 +24,7 @@ router.get(
   isAdmin,
   listBorrowers
 );
-router.put(
-  '/update/admin',
-  userValidationRules,
-  authMethods.isAuthenicated,
-  isAdmin,
-  updateAdmin
-);
+router.put('/update/admin', authMethods.isAuthenicated, isAdmin, updateAdmin);
 router.delete(
   '/delete/:userId/borrower',
   authMethods.isAuthenicated,

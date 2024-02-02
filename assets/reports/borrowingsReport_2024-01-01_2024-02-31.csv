@@ -1,5 +1,3 @@
 Borrowing ID,Book Title,Borrowed Date,Due Date,Borrower Name,Borrower Email,Returned
-6cd00c5b-3a57-49d5-8034-c99137b34e0a,book1,2024-02-01,2024-02-08,moustafa,mostafa@example.com,true
-68b16e88-8109-45ca-aa44-1e96c1041f2b,book1,2024-02-01,2024-02-08,moustafa,mostafa@example.com,true
-d38779cc-5e33-4989-a3b7-39a4dee173c3,book1,2024-02-01,2024-02-08,moustafa,mostafa@example.com,true
-3c0a0a76-4376-4edd-bc8f-491f74e47667,book1,2024-01-01,2024-01-08,moustafa,mostafa@example.com,false
+b5df1615-9fde-488a-a126-9cdab1b127df,New Test Book,2024-02-02,2024-02-09,Test User,testUser@example.com,false
+e550615f-5112-496d-bb79-42860ff90e41,New Test Book,2024-02-02,2024-02-09,user1,user1@gmail.com,false

@@ -27,13 +27,7 @@ router.get(
   searchRateLimiter,
   searchBooks
 );
-router.put(
-  '/update/:bookId',
-  bookValidationRules,
-  authMethods.isAuthenicated,
-  isAdmin,
-  updateBook
-);
+router.put('/update/:bookId', authMethods.isAuthenicated, isAdmin, updateBook);
 router.delete(
   '/delete/:bookId',
   authMethods.isAuthenicated,

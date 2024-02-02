@@ -6,12 +6,6 @@ import { userValidationRules } from '../middlewares/inputValidation';
 
 const router = Router();
 
-router.put(
-  '/update',
-  userValidationRules,
-  authMethods.isAuthenicated,
-  isUser,
-  updateUser
-);
+router.put('/update', authMethods.isAuthenicated, isUser, updateUser);
 
 export const UserRoutes: Router = router;
