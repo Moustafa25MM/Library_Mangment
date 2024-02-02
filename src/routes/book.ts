@@ -9,6 +9,7 @@ import {
   updateBook,
 } from '../controllers/book.contoller';
 import { bookValidationRules } from '../middlewares/inputValidation';
+import { searchRateLimiter } from '../rateLimiters/searchRateLimiter';
 
 const router = Router();
 
@@ -20,7 +21,12 @@ router.post(
   addBook
 );
 router.get('/list/books', authMethods.isAuthenicated, listBooks);
-router.get('/search/books', authMethods.isAuthenicated, searchBooks);
+router.get(
+  '/search/books',
+  authMethods.isAuthenicated,
+  searchRateLimiter,
+  searchBooks
+);
 router.put(
   '/update/:bookId',
   bookValidationRules,
