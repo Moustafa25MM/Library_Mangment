@@ -36,7 +36,8 @@ export const registerBorrower = async (
     });
     return RequestHandler.sendSuccess(
       response,
-      'user created successfully'
+      'user created successfully',
+      201
     )({ user });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);

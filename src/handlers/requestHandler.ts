@@ -5,9 +5,8 @@ export interface ErrorResponse extends Error {
 }
 
 class RequestHandler {
-  sendSuccess(res: Response, message?: string) {
+  sendSuccess(res: Response, message?: string, status: number = 200) {
     return (data: any, globalData?: any) => {
-      const status = 200;
       res.status(status).json({
         type: 'success',
         message: message || 'Success result',
