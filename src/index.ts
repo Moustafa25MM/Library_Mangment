@@ -4,10 +4,16 @@ import morgan from 'morgan';
 import prisma from './database';
 import { indexRouter } from './routes';
 import { createDefaultAdmin } from './defaultAdmin';
+import helmet from 'helmet';
 
 dotenv.config();
 
 export const app: Express = express();
+
+// Security middlewares
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+
 app.use(express.json());
 app.use(morgan('tiny'));
 
