@@ -1,6 +1,6 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
-import requestHandler from '../handlers/requestHandler';
+import RequestHandler from '../handlers/requestHandler';
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 
@@ -37,12 +37,12 @@ export const createAdmin = async (request: Request, response: Response) => {
       },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Admin created successfully'
     )({ admin });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -89,12 +89,12 @@ export const updateAdmin = async (request: any, response: Response) => {
       data: updateData,
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Admin updated successfully'
     )({ updatedAdmin });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -106,12 +106,12 @@ export const deleteBorrower = async (request: Request, response: Response) => {
       where: { id: userId, role: 'BORROWER' },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Borrower deleted successfully'
     )({});
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -121,11 +121,11 @@ export const listBorrowers = async (_: Request, response: Response) => {
       where: { role: 'BORROWER' },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Borrowers retrieved successfully'
     )({ borrowers });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };

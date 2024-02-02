@@ -1,6 +1,6 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
-import requestHandler from '../handlers/requestHandler';
+import RequestHandler from '../handlers/requestHandler';
 import { validationResult } from 'express-validator';
 
 export const addBook = async (request: Request, response: Response) => {
@@ -33,12 +33,12 @@ export const addBook = async (request: Request, response: Response) => {
       },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Book added successfully'
     )({ book });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -89,7 +89,7 @@ export const updateBook = async (request: Request, response: Response) => {
       data: updateData,
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Book updated successfully'
     )({ updatedBook });
@@ -97,7 +97,7 @@ export const updateBook = async (request: Request, response: Response) => {
     if (error.code === 'P2025') {
       return response.status(404).json({ msg: 'Error: Book not found.' });
     }
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -109,12 +109,12 @@ export const deleteBook = async (request: Request, response: Response) => {
       where: { id: bookId },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Book deleted successfully'
     )({});
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -122,12 +122,12 @@ export const listBooks = async (_: Request, response: Response) => {
   try {
     const books = await prisma.book.findMany();
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Books retrieved successfully'
     )({ books });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -174,7 +174,7 @@ export const searchBooks = async (request: any, response: Response) => {
         AND: [searchConditions],
       },
     });
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       books.length > 0
         ? 'Books found successfully'
@@ -182,6 +182,6 @@ export const searchBooks = async (request: any, response: Response) => {
     )({ books });
   } catch (error: any) {
     // Handle any errors that occur during the database query
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };

@@ -1,6 +1,6 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
-import requestHandler from '../handlers/requestHandler';
+import RequestHandler from '../handlers/requestHandler';
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 
@@ -39,7 +39,7 @@ export const updateUser = async (request: any, response: Response) => {
       data: updateData,
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'User updated successfully'
     )({ updatedUser });
@@ -50,6 +50,6 @@ export const updateUser = async (request: any, response: Response) => {
         .status(409)
         .send('There is already a user with the same email.');
     }
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };

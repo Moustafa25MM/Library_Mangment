@@ -2,8 +2,8 @@ import prisma from '../database';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { authMethods } from '../middlewares/auth';
-import requestHandler from '../handlers/requestHandler';
 import { validationResult } from 'express-validator';
+import RequestHandler from '../handlers/requestHandler';
 
 export const registerBorrower = async (
   request: Request,
@@ -34,12 +34,12 @@ export const registerBorrower = async (
         role: 'BORROWER',
       },
     });
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'user created successfully'
     )({ user });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -69,11 +69,11 @@ export const loginUser = async (request: Request, response: Response) => {
       email: existingUser.email,
       role: existingUser.role,
     };
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'user Login Successfully'
     )({ token, user: userData });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };

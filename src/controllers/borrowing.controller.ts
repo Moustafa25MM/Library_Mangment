@@ -1,6 +1,6 @@
 import prisma from '../database';
 import { Request, Response } from 'express';
-import requestHandler from '../handlers/requestHandler';
+import RequestHandler from '../handlers/requestHandler';
 
 export const checkOutBook = async (request: any, response: Response) => {
   const userId = request.user.id;
@@ -55,12 +55,12 @@ export const checkOutBook = async (request: any, response: Response) => {
       },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Book Borrowed successfully'
     )({ borrowing });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -100,12 +100,12 @@ export const returnBook = async (request: any, response: Response) => {
       data: { quantity: { increment: 1 } },
     });
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Book returned successfully'
     )({});
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -128,18 +128,18 @@ export const getCurrentlyBorrowedBooks = async (
     });
 
     if (borrowedBooks.length === 0) {
-      return requestHandler.sendSuccess(
+      return RequestHandler.sendSuccess(
         response,
         'No books currently borrowed'
       )({ borrowedBooks });
     }
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Currently borrowed books retrieved successfully'
     )({ borrowedBooks });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -161,18 +161,18 @@ export const listAllOverdueBooks = async (request: any, response: Response) => {
     });
 
     if (overdueBooks.length === 0) {
-      return requestHandler.sendSuccess(
+      return RequestHandler.sendSuccess(
         response,
         'No overdue books found'
       )({ overdueBooks });
     }
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Overdue books retrieved successfully'
     )({ overdueBooks });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
 
@@ -199,17 +199,17 @@ export const checkBorrowerOverdueBooks = async (
     });
 
     if (overdueBooks.length === 0) {
-      return requestHandler.sendSuccess(
+      return RequestHandler.sendSuccess(
         response,
         'You have no overdue books'
       )({ overdueBooks });
     }
 
-    return requestHandler.sendSuccess(
+    return RequestHandler.sendSuccess(
       response,
       'Your overdue books retrieved successfully'
     )({ overdueBooks });
   } catch (error: any) {
-    return requestHandler.sendError(response, error);
+    return RequestHandler.sendError(response, error);
   }
 };
