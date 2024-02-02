@@ -20,4 +20,5 @@ RUN npm run build
 EXPOSE 4000
 
 # Run the specified command within the container.
-CMD [ "npm" ,"run" , "db:push", "&&" , "node", "dist/index.js" ]
+# CMD [ "npm" ,"run" , "db:push", "&&" , "node", "dist/index.js" ]
+CMD [ "./command.sh" ]
