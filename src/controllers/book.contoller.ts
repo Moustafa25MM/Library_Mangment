@@ -2,6 +2,7 @@ import prisma from '../database';
 import { Request, Response } from 'express';
 import RequestHandler from '../handlers/requestHandler';
 import { validationResult } from 'express-validator';
+import { paginationOption } from '../utils/paginations';
 
 export const addBook = async (request: Request, response: Response) => {
   const errors = validationResult(request);
@@ -119,14 +120,29 @@ export const deleteBook = async (request: Request, response: Response) => {
   }
 };
 
-export const listBooks = async (_: Request, response: Response) => {
+export const listBooks = async (request: Request, response: Response) => {
   try {
-    const books = await prisma.book.findMany();
+    const pageSize = parseInt(request.query.pageSize as string) || 10;
+    const pageNumber = parseInt(request.query.pageNumber as string) || 1;
+
+    const totalDocs = await prisma.book.count();
+
+    const pagination = paginationOption(pageSize, pageNumber, totalDocs);
+
+    const books = await prisma.book.findMany({
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
+    });
+
+    const paginatedResponse = {
+      pagination,
+      books,
+    };
 
     return RequestHandler.sendSuccess(
       response,
       'Books retrieved successfully'
-    )({ books });
+    )({ paginatedResponse });
   } catch (error: any) {
     return RequestHandler.sendError(response, error);
   }
@@ -134,7 +150,10 @@ export const listBooks = async (_: Request, response: Response) => {
 
 export const searchBooks = async (request: any, response: Response) => {
   // Extract title, author, and isbn from the query parameters
-  const { title, author, isbn } = request.query;
+  const { title, author, isbn, pageSize = 10, pageNumber = 1 } = request.query;
+
+  const pageSizeNumber = parseInt(pageSize as string);
+  const pageNumberNumber = parseInt(pageNumber as string);
 
   // If no search parameters are provided, return all books
   if (!title && !author && !isbn) {
@@ -169,18 +188,38 @@ export const searchBooks = async (request: any, response: Response) => {
   }
 
   try {
+    const totalDocs = await prisma.book.count({
+      where: {
+        AND: [searchConditions],
+      },
+    });
+
+    const pagination = paginationOption(
+      pageSizeNumber,
+      pageNumberNumber,
+      totalDocs
+    );
+
     // Perform the query with the search conditions
     const books = await prisma.book.findMany({
       where: {
         AND: [searchConditions],
       },
+      take: pageSizeNumber,
+      skip: (pageNumberNumber - 1) * pageSizeNumber,
     });
+
+    const paginatedResponse = {
+      pagination,
+      books,
+    };
+
     return RequestHandler.sendSuccess(
       response,
       books.length > 0
         ? 'Books found successfully'
         : 'No books found with the given criteria.'
-    )({ books });
+    )({ paginatedResponse });
   } catch (error: any) {
     // Handle any errors that occur during the database query
     return RequestHandler.sendError(response, error);
